@@ -22,7 +22,7 @@
 % to avoid loading the natbib package, add option nonatbib:
 %    \usepackage[nonatbib]{neurips_2024}
 
-
+\usepackage{natbib}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -118,6 +118,15 @@ where $c$ is our cost function.
 The $EIpu$ acquisition function brings a notable challenge: this is a myopic approach---our acquisition function will naively focus on minimizing the cost function rather than selecting our next point $x^* = \text{argmax}_{x^*} EIpu(x)$ which is a useful observation for also optimizing $f$. Thus, this caters to adopting a non-myopic approach. Non-myopic approaches to BO generally involve solving a dynamic program to see which possible future observation could help lead to the highest final prediction. But clearly such a dynamic program would be too costly to actually solve, so we must use a Markov decision process (MDP) and multi-step look-ahead to infer which future observation would be the best solution, globally. The next section will explain a common approach to solving this problem in a paper by Eric Hans Lee, Et al. Section 4 will propose our solution to now extending this problem to a setting where $c(x)$ is also probabilistic and not known ahead of time. This will involve setting up a framework in which not only do we use a GP to model out objective function, but we also use a GP to represent what our cost function might look like. We consider a multi-step look-ahead approach as well while factoring in the expected mean and variance of our cost function predictions. No other literature found on cost-constrained BO has considered this, thus making such a setting useful and novel as many practically approaches do not have known cost functions ahead of time. It is difficult to handle such stochastic cost functions; to overcome this challenge we propose modeling the cost as a Gaussian process as well.
 
 \section{Background and previous work}
+
+Traditional BO methods focus on one-step look ahead acquisition functions, such as Expected Improvement (EI), which optimize immediate gain and do not consider future evaluations. This myopic approach can lead to suboptimal performance compared to a holistic evaluation. As a result, multi step look-aheads have emerged, aiming to maximize the cumulative reward across multiple evaluations. This allows for a more balanced exploration-exploitation trade off over a finite budget. 
+
+A prominent solution in multi step look-ahead BO was presented where they formulated the selection process as a dynamic programming problem solved throughout rollout strategies \citep{lamwilcox2017}. This approach extended to constrained optimization by redefining the stage reward to account for constraint satisfaction. However the computation expense of this rollout strategy limited the scalability of the approach. In response, \citep{zhang2019high}, introduced 2-OPT-C which was a constrained two step acquisition function utilizing likelihood ratios for efficient optimization and balances exploration. Practical advancements, such as the Monte Carlo and variance reduction techniques presented in the two-step look-ahead algorithm by Wu and Frazier have significantly reduced this computational barrier by making the non-myopic BO approach feasible in higher dimensions and for larger batches \citep{wu2019practical}. 
+
+\citep{lee2021multistep} tackled the cost-constraint aspect of BO by framing it as a constrained Markov decision process (CDMP), where the costs are variable and depend on the region within the search space. Their approach uses a rollout approximation to the optimal CMDP policy by taking the cost and future iterations into account. This model is very effective for applications where evaluations costs vary widely, such as hyperparameter tuning, where cost efficiency is more critical than sample efficiency. 
+
+Our work builds on these previous advancements by proposing a methodology that models the cost and objective functions within a GP framework, and addresses scenarios where cost functions are unknown and must be dynamically explored alongside the objective function.
+
 \section{Preliminary code and modeling of cost-constrained Bayesian optimization}
 
 This section will mention the code we wrote to reproduce the Lee paper
@@ -790,6 +799,7 @@ IMPORTANT, please:
     \end{itemize}
 
 \end{enumerate}
-
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 \end{document}
