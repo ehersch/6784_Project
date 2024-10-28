@@ -210,7 +210,7 @@ tuning in neural networks.
 
 \section{Background and previous work}
 Traditional BO methods focus on one-step look ahead acquisition 
-functions, such as Expected Improvement (EI) [A.1], which optimize 
+functions, such as Expected Improvement (EI) [A.1.2], which optimize 
 immediate gain and do not consider future evaluations. This myopic 
 approach can lead to suboptimal performance compared to a holistic 
 evaluation. As a result, multi-step look-ahead acquisition functions have emerged, 
@@ -263,10 +263,10 @@ evident. One can think of cost-constrained BO as the following constrained optim
 \end{align*}
 We assume $f(\bfx)$ outputs not only its value, but also its evaluation cost determined by a 
 black-box cost function $c(\bfx) > 0$. We assume the cost function has the following functional
-form: $c(\bfx) = p(\bfx) + \exp(g(\bfx))$, where $g(\bfx) \sim \mathcal{GP}(m(\bfx), k(\bfx, \bfx')$ and $p(\bfx) = 
+form: $c(\bfx) = p(\bfx) + \exp(g(\bfx))$, where $g(\bfx) \sim \mathcal{GP}(\mu(\bfx), k(\bfx, \bfx')$ and $p(\bfx) = 
 \sum_{n=0}^{\infty} a_n(x - x_0)^n > 0$. That is, our cost has some 
 optional known analytic component plus some perturbation term 
-that is state-independent.
+that is state-independent. This means that the cost function will have to now also be modeled by a GP. So we need a handle on the predictive mean and variance of our cost.
 Our goal is to minimize $f(\bfx)$ subject to the total evaluation cost not exceeding $\tau$. The value of
 $\tau$ is a pre-determined upper bound on the total cost, such as compute time, dollars, or
 cloud-compute resource utilization.
@@ -290,7 +290,7 @@ given some decision.
 
 \section{Experiments and results}
 
-To motivate our experiments, we pick standard test optimization functions as our ``datasets'' The first notable function is the Ackley function, which is useful as it exhibits many local minima [A.2]. Other functions include the McCormick and Rosenbrock functions which exhibit a similar level of computational complexity and are selected as they have varying properties of complex optimization problems commonly found: some are bowl-shaped, plate-shaped, valley-shaped, and contain steep ridges/drops. These functions are found from Simon Fraser University: \url{https://www.sfu.ca/~ssurjano/optimization.html}. Our initial experiments deal with the Ackley function in one dimension for fast computation in testing our framework, but experiments will be extended to other functions in higher dimension.
+To motivate our experiments, we pick standard test optimization functions as our ``datasets'' The first notable function is the Ackley function, which is useful as it exhibits many local minima [A.2.1]. Other functions include the McCormick and Rosenbrock functions which exhibit a similar level of computational complexity and are selected as they have varying properties of complex optimization problems commonly found: some are bowl-shaped, plate-shaped, valley-shaped, and contain steep ridges/drops. These functions are found from Simon Fraser University: \url{https://www.sfu.ca/~ssurjano/optimization.html}. Our initial experiments deal with the Ackley function in one dimension for fast computation in testing our framework, but experiments will be extended to other functions in higher dimension.
 
 We used BOTorch and GPyTorch to set up machinery for fitting GPs around both the cost and objective (Ackley) function. Figure 1 shows the surrogate fit around these initial samples.
 
@@ -300,7 +300,9 @@ We used BOTorch and GPyTorch to set up machinery for fitting GPs around both the
     \caption{Initial surrogate model}
 \end{figure}
 
-We then compared random sampling (a non BO technique) with the EIpu and EI acquisition functions to show how Bayesian optimization converges to a gap of 1 sooner (random sampling does not converge to a gap of 1). See figure 2 for this demonstration.
+We then compared random sampling (a non BO technique) with the EIpu and EI acquisition functions to show how Bayesian optimization converges to a gap of 1 sooner (random sampling does not converge to a gap of 1). See figure 2 for this demonstration.\\
+
+In the latter portion of our work, we will first try to set up the CMDP acquisition function to get a handle on non-myopic BO. We will then set up this GP around the cost to model a probabilistic unknown cost.
 
 \begin{figure}
     \centering
